@@ -45,7 +45,7 @@ from tensorboard_logger import log_value
 from hparams import hparams, hparams_debug_string
 
 # Default DATA_ROOT
-DATA_ROOT = join(expanduser("~"), "tacotron", "training")
+DATA_ROOT = join("tacotron", "training")
 
 fs = hparams.sample_rate
 
@@ -91,7 +91,7 @@ class _NPYDataSource(FileDataSource):
         meta = join(DATA_ROOT, "train.txt")
         with open(meta, "rb") as f:
             lines = f.readlines()
-        lines = list(map(lambda l: l.decode("utf-8").split("|")[self.col], lines))
+        lines = list(map(lambda l: l.decode("utf-8").split(",")[self.col], lines))
         paths = list(map(lambda f: join(DATA_ROOT, f), lines))
         return paths
 
@@ -133,7 +133,7 @@ def collate_fn(batch):
         max_target_len += r - max_target_len % r
         assert max_target_len % r == 0
 
-    a = np.array([_pad(x[0], max_input_len) for x in batch], dtype=np.int)
+    a = np.array([_pad(x[0], max_input_len) for x in batch], dtype=int)
     x_batch = torch.LongTensor(a)
 
     input_lengths = torch.LongTensor(input_lengths)

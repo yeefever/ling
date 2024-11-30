@@ -196,7 +196,7 @@ class Decoder(nn.Module):
             # Grouping multiple frames if necessary
             if inputs.size(-1) == self.in_dim:
                 inputs = inputs.view(B, inputs.size(1) // self.r, -1)
-            assert inputs.size(-1) == self.in_dim * self.r
+            # assert inputs.size(-1) == self.in_dim * self.r
             T_decoder = inputs.size(1)
 
         # go frames

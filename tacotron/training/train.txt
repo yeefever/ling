@@ -1,13 +1,13 @@
-DFA_linear_spectrogram.npy,DFA_mel_spectrogram.npy,86,Don't forget a jacket
-IEO_linear_spectrogram.npy,IEO_mel_spectrogram.npy,101,It's eleven o'clock.
-IEO_linear_spectrogram.npy,IEO_mel_spectrogram.npy,82,It's eleven o'clock.
-IEO_linear_spectrogram.npy,IEO_mel_spectrogram.npy,61,It's eleven o'clock.
-ITH_linear_spectrogram.npy,ITH_mel_spectrogram.npy,110,I think I have a doctor's appointment
-ITS_linear_spectrogram.npy,ITS_mel_spectrogram.npy,78,I think I've seen this before.
-IWL_linear_spectrogram.npy,IWL_mel_spectrogram.npy,102,I would like a new alarm clock.
-IWW_linear_spectrogram.npy,IWW_mel_spectrogram.npy,82,I wonder what this is about.
-MTI_linear_spectrogram.npy,MTI_mel_spectrogram.npy,92,Maybe tomorrow it will be cold.
-TAI_linear_spectrogram.npy,TAI_mel_spectrogram.npy,87,The airplane is almost full
-TIE_linear_spectrogram.npy,TIE_mel_spectrogram.npy,99,That is exactly what happened.
-TSI_linear_spectrogram.npy,TSI_mel_spectrogram.npy,73,The surface is slick.
-WSI_linear_spectrogram.npy,WSI_mel_spectrogram.npy,79,We'll stop in a couple of minutes.
+DFA_linear_spectrogram.npy,DFA_mel_spectrogram.npy,219,Don't forget a jacket
+IEO_linear_spectrogram.npy,IEO_mel_spectrogram.npy,257,It's eleven o'clock.
+IEO_linear_spectrogram.npy,IEO_mel_spectrogram.npy,209,It's eleven o'clock.
+IEO_linear_spectrogram.npy,IEO_mel_spectrogram.npy,155,It's eleven o'clock.
+ITH_linear_spectrogram.npy,ITH_mel_spectrogram.npy,281,I think I have a doctor's appointment
+ITS_linear_spectrogram.npy,ITS_mel_spectrogram.npy,198,I think I've seen this before.
+IWL_linear_spectrogram.npy,IWL_mel_spectrogram.npy,259,I would like a new alarm clock.
+IWW_linear_spectrogram.npy,IWW_mel_spectrogram.npy,209,I wonder what this is about.
+MTI_linear_spectrogram.npy,MTI_mel_spectrogram.npy,235,Maybe tomorrow it will be cold.
+TAI_linear_spectrogram.npy,TAI_mel_spectrogram.npy,222,The airplane is almost full
+TIE_linear_spectrogram.npy,TIE_mel_spectrogram.npy,251,That is exactly what happened.
+TSI_linear_spectrogram.npy,TSI_mel_spectrogram.npy,187,The surface is slick.
+WSI_linear_spectrogram.npy,WSI_mel_spectrogram.npy,201,We'll stop in a couple of minutes.
