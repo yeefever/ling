@@ -30,7 +30,7 @@ def get_hparams():
       batch_size=32,
       adam_beta1=0.9,
       adam_beta2=0.999,
-      initial_learning_rate=0.002,
+      initial_learning_rate=2e-5,
       decay_learning_rate=True,
       nepochs=1000,
       weight_decay=0.0,
