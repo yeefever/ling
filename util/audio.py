@@ -4,7 +4,9 @@ import math
 import numpy as np
 import tensorflow as tf
 import scipy
-from hparams import hparams
+from hparams import get_hparams
+
+hparams = get_hparams()
 
 
 def load_wav(path):

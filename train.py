@@ -20,6 +20,8 @@ from text import text_to_sequence, symbols
 from util import audio
 from util.plot import plot_alignment
 from tqdm import tqdm, trange
+from nnmnkwii.datasets import FileSourceDataset, FileDataSource
+from hparams import get_hparams
 
 # The tacotron model
 from tacotron_pytorch import Tacotron
@@ -32,8 +34,6 @@ from torch import optim
 import torch.backends.cudnn as cudnn
 from torch.utils import data as data_utils
 import numpy as np
-
-from nnmnkwii.datasets import FileSourceDataset, FileDataSource
 from os.path import join, expanduser
 
 import librosa.display
@@ -300,8 +300,8 @@ if __name__ == "__main__":
         DATA_ROOT = data_root
 
     # Override hyper parameters
-    hparams.parse(args["--hparams"])
-
+    hparams = get_hparams() 
+    print(hparams.batch_size)
     os.makedirs(checkpoint_dir, exist_ok=True)
 
     # Input dataset definitions
@@ -346,7 +346,7 @@ if __name__ == "__main__":
     # Setup tensorboard logger
     tensorboard_logger.configure("log/run-test")
 
-    print(hparams_debug_string())
+    # print(hparams_debug_string())
 
     # Train!
     try:
