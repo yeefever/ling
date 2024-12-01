@@ -24,7 +24,7 @@ def get_hparams():
 
       # Data loader
       pin_memory=True,
-      num_workers=2,
+      num_workers=1,
 
       # Training:
       batch_size=32,

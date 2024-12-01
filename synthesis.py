@@ -58,7 +58,7 @@ def tts(model, text):
     alignment = alignments[0].cpu().data.numpy()
 
     # Predicted audio signal
-    waveform = audio.inv_spectrogram(linear_output.T)
+    waveform = audio.inv_spectrogram(linear_output.T).astype(float)
 
     return waveform, alignment, spectrogram
 

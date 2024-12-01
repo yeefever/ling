@@ -35,7 +35,7 @@ def spectrogram(y):
 def inv_spectrogram(spectrogram):
   '''Converts spectrogram to waveform using librosa'''
   S = _db_to_amp(_denormalize(spectrogram) + hparams.ref_level_db)  # Convert back to linear
-  return inv_preemphasis(_griffin_lim(S ** hparams.power))          # Reconstruct phase
+  return inv_preemphasis(_griffin_lim(S ** hparams.power))       # Reconstruct phase
 
 
 def inv_spectrogram_tensorflow(spectrogram):
@@ -69,8 +69,8 @@ def _griffin_lim(S):
   Based on https://github.com/librosa/librosa/issues/434
   '''
   angles = np.exp(2j * np.pi * np.random.rand(*S.shape))
-  S_complex = np.abs(S).astype(np.complex)
-  y = _istft(S_complex * angles)
+  S_complex = np.abs(S).astype(np.float32)
+  y = _istft(S_complex * angles).astype(np.float32)
   for i in range(hparams.griffin_lim_iters):
     angles = np.exp(1j * np.angle(_stft(y)))
     y = _istft(S_complex * angles)
@@ -95,12 +95,12 @@ def _griffin_lim_tensorflow(S):
 
 def _stft(y):
   n_fft, hop_length, win_length = _stft_parameters()
-  return librosa.stft(y=y, n_fft=n_fft, hop_length=hop_length, win_length=win_length)
+  return librosa.stft(y=y, n_fft=n_fft, hop_length=hop_length, win_length=win_length, dtype = np.float32)
 
 
 def _istft(y):
   _, hop_length, win_length = _stft_parameters()
-  return librosa.istft(y, hop_length=hop_length, win_length=win_length)
+  return librosa.istft(y, hop_length=hop_length, win_length=win_length, dtype= np.float32)
 
 
 def _stft_tensorflow(signals):

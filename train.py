@@ -10,6 +10,7 @@ options:
     -h, --help                Show this help message and exit
 """
 from docopt import docopt
+import time
 
 # Use text & audio modules from existing Tacotron implementation.
 import sys
@@ -46,6 +47,12 @@ from hparams import hparams, hparams_debug_string
 
 # Default DATA_ROOT
 DATA_ROOT = join("tacotron", "training")
+
+# torch.multiprocessing.set_start_method('spawn')
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+print(device)
+
 
 fs = hparams.sample_rate
 
@@ -121,30 +128,28 @@ class PyTorchDataset(object):
     def __len__(self):
         return len(self.X)
 
-
 def collate_fn(batch):
     """Create batch"""
     r = hparams.outputs_per_step
     input_lengths = [len(x[0]) for x in batch]
     max_input_len = np.max(input_lengths)
-    # Add single zeros frame at least, so plus 1
     max_target_len = np.max([len(x[1]) for x in batch]) + 1
     if max_target_len % r != 0:
         max_target_len += r - max_target_len % r
         assert max_target_len % r == 0
 
-    a = np.array([_pad(x[0], max_input_len) for x in batch], dtype=int)
-    x_batch = torch.LongTensor(a)
+    padded_batch = np.array([_pad(x[0], max_input_len) for x in batch])
+    x_batch = torch.from_numpy(padded_batch).long().to(device)
 
-    input_lengths = torch.LongTensor(input_lengths)
+    input_lengths = torch.LongTensor(input_lengths).to(device)
 
-    b = np.array([_pad_2d(x[1], max_target_len) for x in batch],
-                 dtype=np.float32)
-    mel_batch = torch.FloatTensor(b)
+    padded_mel_batch = np.array([_pad_2d(x[1], max_target_len) for x in batch], dtype=np.float32)
+    padded_y_batch = np.array([_pad_2d(x[2], max_target_len) for x in batch], dtype=np.float32)
 
-    c = np.array([_pad_2d(x[2], max_target_len) for x in batch],
-                 dtype=np.float32)
-    y_batch = torch.FloatTensor(c)
+    # Convert directly to PyTorch FloatTensors
+    mel_batch = torch.from_numpy(padded_mel_batch).to(device)
+    y_batch = torch.from_numpy(padded_y_batch).to(device)
+
     return x_batch, input_lengths, mel_batch, y_batch
 
 
@@ -203,22 +208,23 @@ def save_states(global_step, mel_outputs, linear_outputs, attn, y,
     linear_output = y[idx].cpu().data.numpy()
     save_spectrogram(path, linear_output)
 
-
 def train(model, data_loader, optimizer,
           init_lr=0.002,
           checkpoint_dir=None, checkpoint_interval=None, nepochs=None,
           clip_thresh=1.0):
     model.train()
-    if use_cuda:
-        model = model.cuda()
+    model = model.to(device)  # Ensure model is on the correct device
     linear_dim = model.linear_dim
-
-    criterion = nn.L1Loss()
+    criterion = nn.L1Loss().to(device)  # Loss function on device
 
     global global_step, global_epoch
+    epoch_timer = time.time()
+    log_interval = 10
+    loss_history = []  # Store loss history for plotting
+
     while global_epoch < nepochs:
         running_loss = 0.
-        for step, (x, input_lengths, mel, y) in tqdm(enumerate(data_loader)):
+        for step, (x, input_lengths, mel, y) in enumerate(data_loader):
             # Decay learning rate
             current_lr = _learning_rate_decay(init_lr, global_step)
             for param_group in optimizer.param_groups:
@@ -229,16 +235,12 @@ def train(model, data_loader, optimizer,
             # Sort by length
             sorted_lengths, indices = torch.sort(
                 input_lengths.view(-1), dim=0, descending=True)
-            sorted_lengths = sorted_lengths.long().numpy()
+            sorted_lengths = sorted_lengths.long().to(device)
 
-            x, mel, y = x[indices], mel[indices], y[indices]
+            x, mel, y = x[indices].to(device), mel[indices].to(device), y[indices].to(device)
 
             # Feed data
-            x, mel, y = Variable(x), Variable(mel), Variable(y)
-            if use_cuda:
-                x, mel, y = x.cuda(), mel.cuda(), y.cuda()
-            mel_outputs, linear_outputs, attn = model(
-                x, mel, input_lengths=sorted_lengths)
+            mel_outputs, linear_outputs, attn = model(x, mel, input_lengths=sorted_lengths)
 
             # Loss
             mel_loss = criterion(mel_outputs, mel)
@@ -251,32 +253,52 @@ def train(model, data_loader, optimizer,
             if global_step > 0 and global_step % checkpoint_interval == 0:
                 save_states(
                     global_step, mel_outputs, linear_outputs, attn, y,
-                    sorted_lengths, checkpoint_dir)
+                    sorted_lengths.cpu(), checkpoint_dir)
                 save_checkpoint(
                     model, optimizer, global_step, checkpoint_dir, global_epoch)
 
             # Update
             loss.backward()
-            grad_norm = torch.nn.utils.clip_grad_norm(
+            grad_norm = torch.nn.utils.clip_grad_norm_(
                 model.parameters(), clip_thresh)
             optimizer.step()
 
             # Logs
-            log_value("loss", float(loss.data.item()), global_step)
-            log_value("mel loss", float(mel_loss.data.item()), global_step)
-            log_value("linear loss", float(linear_loss.data.item()), global_step)
+            log_value("loss", float(loss.item()), global_step)
+            log_value("mel loss", float(mel_loss.item()), global_step)
+            log_value("linear loss", float(linear_loss.item()), global_step)
             log_value("gradient norm", grad_norm, global_step)
             log_value("learning rate", current_lr, global_step)
 
-            global_step += 1
-            running_loss += loss.data.item()
+            # Timing
+            if global_epoch % log_interval == 0:
+                epoch_end_time = time.time()
+                elapsed_time = epoch_end_time - epoch_timer
+                print(f"Epoch {global_epoch}/{nepochs} - Loss: {averaged_loss:.4f} - Time for last {log_interval} epochs: {elapsed_time:.2f}s")
+                epoch_timer = epoch_end_time  # Reset timer for next 10 epochs
 
-        averaged_loss = running_loss / (len(data_loader))
+            global_step += 1
+            running_loss += loss.item()
+
+        averaged_loss = running_loss / len(data_loader)
         log_value("loss (per epoch)", averaged_loss, global_epoch)
-        print("Loss: {}".format(running_loss / (len(data_loader))))
+
+        # Store the averaged loss for plotting
+        loss_history.append(averaged_loss)
+
+        # Plot every 100 epochs
+        if global_epoch % 100 == 0:
+            plt.figure(figsize=(10, 6))
+            plt.plot(loss_history, label='Training Loss')
+            plt.title(f"Training Loss over Epochs")
+            plt.xlabel("Epochs")
+            plt.ylabel("Loss")
+            plt.legend()
+            plt.grid(True)
+            plt.savefig(f'{checkpoint_dir}/loss_plot_epoch_{global_epoch}.png')
+            plt.close()
 
         global_epoch += 1
-
 
 def save_checkpoint(model, optimizer, step, checkpoint_dir, epoch):
     checkpoint_path = join(
@@ -324,7 +346,7 @@ if __name__ == "__main__":
                      r=hparams.outputs_per_step,
                      padding_idx=hparams.padding_idx,
                      use_memory_mask=hparams.use_memory_mask,
-                     )
+                     ).to(device)
     optimizer = optim.Adam(model.parameters(),
                            lr=hparams.initial_learning_rate, betas=(
                                hparams.adam_beta1, hparams.adam_beta2),
@@ -359,6 +381,18 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         save_checkpoint(
             model, optimizer, global_step, checkpoint_dir, global_epoch)
+
+
+    checkpoint_final = {
+        'epoch': global_epoch,
+        'global_step': global_step,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+    }
+
+    checkpoint_path = f"final_{global_step}.pth"
+    torch.save(checkpoint, checkpoint_path)
+    print(f"Checkpoint saved to {checkpoint_path}")
 
     print("Finished")
     sys.exit(0)
