@@ -1,0 +1,13 @@
+DFA_linear_spectrogram.npy,DFA_mel_spectrogram.npy,206,Don't forget a jacket
+IEO_linear_spectrogram.npy,IEO_mel_spectrogram.npy,219,It's eleven o'clock.
+IEO_linear_spectrogram.npy,IEO_mel_spectrogram.npy,193,It's eleven o'clock.
+IEO_linear_spectrogram.npy,IEO_mel_spectrogram.npy,222,It's eleven o'clock.
+ITH_linear_spectrogram.npy,ITH_mel_spectrogram.npy,235,I think I have a doctor's appointment
+ITS_linear_spectrogram.npy,ITS_mel_spectrogram.npy,217,I think I've seen this before.
+IWL_linear_spectrogram.npy,IWL_mel_spectrogram.npy,209,I would like a new alarm clock.
+IWW_linear_spectrogram.npy,IWW_mel_spectrogram.npy,193,I wonder what this is about.
+MTI_linear_spectrogram.npy,MTI_mel_spectrogram.npy,219,Maybe tomorrow it will be cold.
+TAI_linear_spectrogram.npy,TAI_mel_spectrogram.npy,201,The airplane is almost full
+TIE_linear_spectrogram.npy,TIE_mel_spectrogram.npy,203,That is exactly what happened.
+TSI_linear_spectrogram.npy,TSI_mel_spectrogram.npy,195,The surface is slick.
+WSI_linear_spectrogram.npy,WSI_mel_spectrogram.npy,209,We'll stop in a couple of minutes.
