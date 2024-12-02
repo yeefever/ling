@@ -32,7 +32,7 @@ def get_hparams():
       adam_beta2=0.999,
       initial_learning_rate=2e-5,
       decay_learning_rate=True,
-      nepochs=1000,
+      nepochs=5000,
       weight_decay=0.0,
       clip_thresh=1.0,
 
