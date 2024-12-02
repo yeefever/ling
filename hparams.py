@@ -32,12 +32,12 @@ def get_hparams():
       adam_beta2=0.999,
       initial_learning_rate=2e-5,
       decay_learning_rate=True,
-      nepochs=3000,
+      nepochs=5000,
       weight_decay=0.0,
       clip_thresh=1.0,
 
       # Save
-      checkpoint_interval=3000,
+      checkpoint_interval=5000,
 
       # Eval:
       max_iters=200,

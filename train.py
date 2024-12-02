@@ -318,6 +318,7 @@ if __name__ == "__main__":
     checkpoint_dir = args["--checkpoint-dir"]
     checkpoint_path = args["--checkpoint-path"]
     data_root = args["--data-root"]
+    num_epochs = args["--nepochs"]
     if data_root:
         DATA_ROOT = data_root
 
@@ -376,7 +377,7 @@ if __name__ == "__main__":
               init_lr=hparams.initial_learning_rate,
               checkpoint_dir=checkpoint_dir,
               checkpoint_interval=hparams.checkpoint_interval,
-              nepochs=hparams.nepochs,
+              nepochs=num_epochs,
               clip_thresh=hparams.clip_thresh)
     except KeyboardInterrupt:
         save_checkpoint(
