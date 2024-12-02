@@ -23,8 +23,8 @@ def get_hparams():
       use_memory_mask=False,
 
       # Data loader
-      pin_memory=True,
-      num_workers=1,
+      pin_memory=False,
+      num_workers=0,
 
       # Training:
       batch_size=32,
