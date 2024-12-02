@@ -1,4 +1,5 @@
-"""Trainining script for Tacotron speech synthesis model.
+"""
+Trainining script for Tacotron speech synthesis model.
 
 usage: train.py [options]
 
@@ -6,7 +7,8 @@ options:
     --data-root=<dir>         Directory contains preprocessed features.
     --checkpoint-dir=<dir>    Directory where to save model checkpoints [default: checkpoints].
     --checkpoint-path=<name>  Restore model from checkpoint path if given.
-    --hparams=<parmas>        Hyper parameters [default: ].
+    --hparams=<params>        Hyper parameters [default: ].
+    --nepochs=<n>             Number of epochs to train [default: 100].
     -h, --help                Show this help message and exit
 """
 from docopt import docopt
@@ -318,7 +320,7 @@ if __name__ == "__main__":
     checkpoint_dir = args["--checkpoint-dir"]
     checkpoint_path = args["--checkpoint-path"]
     data_root = args["--data-root"]
-    num_epochs = args["--nepochs"]
+    num_epochs = int(args["--nepochs"])
     if data_root:
         DATA_ROOT = data_root
 
