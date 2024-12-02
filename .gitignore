@@ -192,5 +192,4 @@ Temporary Items
 .Trash-*
 
 # Models: 
-angry_1002_1000epochs_2e-5.pth
-fear_1002_1000epochs_2e-5.pth
+models/

@@ -48,7 +48,6 @@ def get_hparams():
 
 hparams = get_hparams()
 
-
 def hparams_debug_string():
     values = hparams.values()
     hp = ['  %s: %s' % (name, values[name]) for name in sorted(values)]
