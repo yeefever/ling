@@ -360,7 +360,7 @@ if __name__ == "__main__":
         print("Load checkpoint from: {}".format(checkpoint_path))
         checkpoint = torch.load(checkpoint_path)
         model.load_state_dict(checkpoint["state_dict"])
-        optimizer.load_state_dict(checkpoint["optimizer"])
+        # optimizer.load_state_dict(checkpoint["optimizer"])
         try:
             global_step = checkpoint["global_step"]
             global_epoch = checkpoint["global_epoch"]
